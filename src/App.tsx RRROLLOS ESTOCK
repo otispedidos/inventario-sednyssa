@@ -1,0 +1,276 @@
+import React, { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Plus,
+  Search,
+  Package,
+  AlertCircle,
+  Ruler,
+  Trash2,
+  CheckCircle2,
+  Activity,
+  Menu,
+  X,
+  ShoppingBag,
+} from "lucide-react";
+import "./styles.css";
+
+const COLORS_MASTER = [
+  "Celeste Oscuro",
+  "Lavanda",
+  "Nuevo Morado",
+  "Verde Zule",
+  "Lacre",
+  "Celeste Bebé",
+  "Blanco",
+  "Rojo",
+  "Rosado Bebé",
+  "Turquesa Bebé",
+  "Fucsia 2",
+  "Verde agua",
+  "Flor de papa",
+  "Melon",
+  "Pavo",
+  "Verde esmeralda",
+  "Vino",
+  "Rosado",
+  "Verde Cemento",
+  "Palo Rosa",
+  "Barnie",
+  "Amarillo Bebé",
+  "Verde Jade",
+  "Crema",
+  "Celeste",
+  "Fucsia 1",
+  "Yogurt",
+  "Verde Cobalto",
+  "Coral",
+  "Verde Manzana",
+  "Verde Palta",
+  "Turquesa",
+  "Melon Bebé",
+  "Aceituna",
+  "Verde Agua Bebé",
+  "Cosmetico",
+  "Lila",
+  "Chicle",
+  "Palo Rosa Bebé",
+];
+
+export default function App() {
+  const [rollos, setRollos] = useState<any[]>([]);
+  const [filter, setFilter] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [nuevo, setNuevo] = useState({
+    color: COLORS_MASTER[0],
+    codigo: "",
+    ancho: 1.6,
+    metros: 100,
+  });
+
+  const agregarRollo = () => {
+    if (!nuevo.codigo.trim()) return;
+    setRollos([{ ...nuevo, id: Date.now() }, ...rollos]);
+    setNuevo({ ...nuevo, codigo: "", metros: 100 });
+  };
+
+  const eliminarRollo = (id: number) =>
+    setRollos(rollos.filter((r) => r.id !== id));
+
+  const coloresConStock = useMemo(
+    () => Array.from(new Set(rollos.map((r) => r.color))),
+    [rollos]
+  );
+  const coloresSinStock = useMemo(
+    () => COLORS_MASTER.filter((c) => !coloresConStock.includes(c)),
+    [coloresConStock]
+  );
+
+  const filteredRollos = rollos.filter(
+    (r) =>
+      r.color.toLowerCase().includes(filter.toLowerCase()) ||
+      r.codigo.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className="app-container">
+      <div className="floating-orbs">
+        <div className="orb-1"></div>
+        <div className="orb-2"></div>
+      </div>
+
+      <aside className={`sidebar-glass ${sidebarOpen ? "mobile-open" : ""}`}>
+        <div className="brand-section">
+          <div className="logo-square">OT</div>
+          <div className="brand-text">
+            <h1>SEDA OTIS</h1>
+            <p>STOCK DE ROLLOS ALMACÉN</p>
+          </div>
+        </div>
+
+        <div className="reposicion-box">
+          <div className="label-header">
+            <AlertCircle size={14} />{" "}
+            <span>FALTAN {coloresSinStock.length} COLORES</span>
+          </div>
+          <div className="pill-container">
+            {coloresSinStock.map((c) => (
+              <div key={c} className="color-pill">
+                <span className="indicator"></span> {c}
+              </div>
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      <main className="main-viewport">
+        <header className="top-nav-glass">
+          <button
+            className="mobile-toggle"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {sidebarOpen ? <X /> : <Menu />}
+          </button>
+          <div className="search-wrapper">
+            <Search size={18} />
+            <input
+              placeholder="Buscar seda o lote..."
+              onChange={(e) => setFilter(e.target.value)}
+            />
+          </div>
+          <div className="status-live">
+            <div className="dot-pulse"></div> SISTEMA ACTIVO
+          </div>
+        </header>
+
+        <section className="metrics-grid">
+          <MetricCard
+            title="Colores que faltan"
+            value={coloresSinStock.length}
+            icon={<ShoppingBag />}
+            color="#9D2136"
+            desc="Urge reponer"
+          />
+          <MetricCard
+            title="Total rollos en almacén"
+            value={rollos.length}
+            icon={<Package />}
+            color="#1e293b"
+            desc="Inventario actual"
+          />
+          <MetricCard
+            title="Variedad disponible"
+            value={`${coloresConStock.length}/39`}
+            icon={<CheckCircle2 />}
+            color="#059669"
+            desc="Catálogo cubierto"
+          />
+        </section>
+
+        <section className="form-glass-3d">
+          <div className="input-field">
+            <label>Variedad de Seda</label>
+            <select
+              value={nuevo.color}
+              onChange={(e) => setNuevo({ ...nuevo, color: e.target.value })}
+            >
+              {COLORS_MASTER.map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+          <div className="input-field">
+            <label>ID Lote</label>
+            <input
+              value={nuevo.codigo}
+              placeholder="Ex: OT-99"
+              onChange={(e) => setNuevo({ ...nuevo, codigo: e.target.value })}
+            />
+          </div>
+          <div className="input-field">
+            <label>Metros</label>
+            <input
+              type="number"
+              value={nuevo.metros}
+              onChange={(e) =>
+                setNuevo({ ...nuevo, metros: Number(e.target.value) })
+              }
+            />
+          </div>
+          <button className="btn-add-stock" onClick={agregarRollo}>
+            <Plus size={20} /> AGREGAR
+          </button>
+        </section>
+
+        <div className="table-glass-container">
+          <table className="inventory-table">
+            <thead>
+              <tr>
+                <th>LOTE</th>
+                <th>ESPECIFICACIÓN</th>
+                <th>ANCHO</th>
+                <th>DISPONIBILIDAD</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <AnimatePresence>
+                {filteredRollos.map((r) => (
+                  <motion.tr
+                    key={r.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                  >
+                    <td>
+                      <span className="lote-tag">{r.codigo}</span>
+                    </td>
+                    <td className="seda-name">Seda Otis {r.color}</td>
+                    <td className="ancho-text">{r.ancho}m</td>
+                    <td>
+                      <div className="stock-visual">
+                        <span className="m-val">{r.metros}m</span>
+                        <div className="bar-bg">
+                          <div
+                            className="bar-fill"
+                            style={{ width: `${Math.min(r.metros, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <button
+                        className="del-btn"
+                        onClick={() => eliminarRollo(r.id)}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+            </tbody>
+          </table>
+          {filteredRollos.length === 0 && (
+            <div className="empty-state">No hay registros en el almacén.</div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function MetricCard({ title, value, icon, color, desc }: any) {
+  return (
+    <div className="m-card" style={{ borderTop: `4px solid ${color}` }}>
+      <div className="m-icon" style={{ backgroundColor: color + "15", color }}>
+        {icon}
+      </div>
+      <div className="m-info">
+        <h4>{title}</h4>
+        <h3>{value}</h3>
+        <span className="m-desc">{desc}</span>
+      </div>
+    </div>
+  );
+}

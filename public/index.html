@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <title>Sedny'ssa | Premium Stock System</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background-color: #f8fafc;
+        margin: 0;
+        overflow-x: hidden;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Efectos de luces volumétricas de fondo */
+      .volumetric-light-1 {
+        position: fixed;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(157, 33, 54, 0.08) 0%,
+          transparent 70%
+        );
+        top: -200px;
+        left: -200px;
+        z-index: -1;
+        filter: blur(60px);
+      }
+
+      .volumetric-light-2 {
+        position: fixed;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(243, 171, 186, 0.15) 0%,
+          transparent 70%
+        );
+        bottom: -150px;
+        right: -150px;
+        z-index: -1;
+        filter: blur(60px);
+      }
+
+      /* Corrección para que el root ocupe toda la pantalla */
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="volumetric-light-1"></div>
+    <div class="volumetric-light-2"></div>
+
+    <div id="root"></div>
+
+    <script>
+      // Desactivar gestos de zoom accidentales en Safari/iOS
+      document.addEventListener("gesturestart", function (e) {
+        e.preventDefault();
+      });
+
+      // Pequeño truco para asegurar que jsPDF esté disponible globalmente
+      window.jsPDF = window.jspdf ? window.jspdf.jsPDF : null;
+    </script>
+  </body>
+</html>
